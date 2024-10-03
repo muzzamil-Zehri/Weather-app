@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to bottom, #001f3f, #0074d9);
+            color: white;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 1s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        h1 {
+            text-align: center;
+            padding: 20px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        #container {
+            width: 90%;
+            max-width: 500px;
+            background-color: rgba(0, 107, 156, 0.9);
+            margin: auto;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        #searchbox {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        #searchbox input {
+            flex: 1;
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            outline: none;
+            transition: box-shadow 0.3s;
+        }
+
+        #searchbox input:focus {
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+
+        #searchbox button {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            background-color: #ffdc00;
+            color: #001f3f;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        #searchbox button:hover {
+            transform: scale(1.1);
+        }
+
+        #weather {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        #weather i {
+            font-size: 100px;
+            color: #ffdc00;
+            transition: transform 0.3s;
+        }
+
+        #weather i:hover {
+            transform: rotate(20deg);
+        }
+
+        #weather p {
+            font-size: 24px;
+        }
+
+        #details {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin-top: 20px;
+            padding: 10px 0;
+        }
+
+        .detail {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            width: 80px;
+        }
+
+        .detail i {
+            font-size: 40px;
+            color: #ffdc00;
+            margin-bottom: 5px;
+        }
+
+        #details p {
+            font-size: 16px;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="container">
+        <h1>Weather App</h1>
+        <div id="searchbox">
+            <input type="text" id="city" placeholder="Enter city name">
+            <button id="search"><i class="fa-solid fa-magnifying-glass"></i></button>
+        </div>
+        <div id="weather">
+            <i class="fa-regular fa-sun" id="icon"></i>
+            <p id="temp">x</p>
+            <p id="cityName">x</p>
+            <p id="weatherDescription">x</p> 
+        </div>
+        <div id="details">
+            <div class="detail">
+                <i class="fa-solid fa-water"></i>
+                <p id="humiditytemp">x%</p>
+                <p>Humidity</p>
+            </div>
+            <div class="detail">
+                <i class="fa-solid fa-wind"></i>
+                <p id="windspeed">x km/h</p>
+                <p>Wind Sp</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function getWeather() {
+            const city = document.getElementById('city').value.trim();
+            const apiKey = '5d51e63dac98a004922a69f0236706d7';
+            const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+        
+            const response = await fetch(apiUrl);
+            const data = await response.json();
+            console.log(data);
+        
+            document.getElementById('temp').textContent = `${data.main.temp}°C`;
+            document.getElementById('cityName').textContent = data.name;
+            document.getElementById('humiditytemp').textContent = `${data.main.humidity}%`;
+            document.getElementById('windspeed').textContent = `${data.wind.speed} km/h`;
+        
+            const weatherCondition = data.weather[0].main.toLowerCase();
+            const iconElement = document.getElementById('icon');
+        
+            if (weatherCondition === 'clear') {
+                iconElement.className = 'fa-solid fa-sun';
+                iconElement.style.color = '#ffdc00'; 
+            } else if (weatherCondition === 'clouds') {
+                iconElement.className = 'fa-solid fa-cloud';
+                iconElement.style.color = '#b0bec5'; 
+            } else if (weatherCondition === 'rain') {
+                iconElement.className = 'fa-solid fa-cloud-rain';
+                iconElement.style.color = '#0074d9';
+            } else if (weatherCondition === 'smoke') {
+                iconElement.className = 'fa-solid fa-smog';
+                iconElement.style.color = '#696969'; 
+            } else if (weatherCondition === 'snow') {
+                iconElement.className = 'fa-solid fa-snowflake';
+                iconElement.style.color = '#00d8ff'; 
+            } else {
+                iconElement.className = 'fa-solid fa-cloud-sun';
+                iconElement.style.color = '#ffa500'; 
+            }
+    
+            document.getElementById('weatherDescription').textContent = data.weather[0].description;
+        }
+        
+        document.getElementById('search').addEventListener('click', getWeather);
+        window.addEventListener('load', getWeather);
+        
+        
+    
+        
+    </script>
+
+</body>
+</html>
